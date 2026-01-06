@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id
+  email     String   @unique
+  createdAt DateTime @default(now())
+  habits    Habit[]
+}
+
+model Habit {
+  id          String   @id @default(uuid())
+  title       String
+  icon        String
+  color       String
+  dailyGoal   Int      @default(1)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  logs        HabitLog[]
+}
+
+model HabitLog {
+  id        String   @id @default(uuid())
+  date      DateTime
+  value     Int      @default(1)
+  habitId   String
+  habit     Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  @@unique([habitId, date])
+  @@index([habitId, date])
+}
